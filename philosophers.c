@@ -6,7 +6,7 @@
 /*   By: adbaich <adbaich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:19:30 by adbaich           #+#    #+#             */
-/*   Updated: 2022/04/21 19:47:17 by adbaich          ###   ########.fr       */
+/*   Updated: 2022/05/07 13:34:40 by adbaich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,18 @@ size_t	get_current_time_philo(t_vars *philo)
 
 void	usleep_action(size_t time_action, t_vars *philo)
 {
-	size_t	i;
-
-	i = 0;
+	time_action = time_action + get_current_time_philo(philo);
 	while (get_current_time_philo(philo) != time_action)
-		i++;
+		usleep(400);
 }
 
 void	think_time(t_vars *philo)
 {
+	// if (philo->index == 1)
+	// 	printf("jgdhjsgfsilailahailaallaj\n");
 	printf("%zu ms %d is thinking\n", get_current_time_philo(philo), philo->index);
+	usleep_action(2, philo);
+	eat_time((void *)philo);
 }
 
 void	sleep_time(t_vars *philo)
@@ -66,23 +68,35 @@ void	*eat_time(void *philo1)
 	t_vars 	*philo;
 	size_t	i;
 
+
 	philo = (t_vars *)philo1;
-	philo->init_time = get_time();
-	// philo->last_meal[*philo->index] = get_time();
+	pthread_mutex_lock(&philo->mutex[philo->index - 1]);
+	printf("%zu ms %d has taken a fork\n", get_current_time_philo(philo), philo->index);
+	if (philo->number_of_philosophers == philo->index)
+		pthread_mutex_lock(&philo->mutex[0]);
+	else
+		pthread_mutex_lock(&philo->mutex[philo->index]);
 	printf("%zu ms %d has taken a fork\n", get_current_time_philo(philo), philo->index);
 	printf("%zu ms %d is eating\n", get_current_time_philo(philo), philo->index);
 	philo->last_meal = get_current_time_philo(philo);
 	usleep_action(philo->time_to_eat, philo);
-	// philo->last_meal[*philo->index] = get_time();
+	pthread_mutex_unlock(&philo->mutex[philo->index - 1]);
+	if (philo->number_of_philosophers == philo->index)
+		pthread_mutex_unlock(&philo->mutex[0]);
+	else
+		pthread_mutex_unlock(&philo->mutex[philo->index]);
 	sleep_time(philo);
 	return (philo1);
 }
 
 void	create_philosophers(c_vars *common_info)
 {
-	pthread_t	*t;
-	t_vars		*philo;
-	int			i;
+	pthread_t		*t;
+	pthread_mutex_t *mutex;
+	t_vars			*philo;
+	int				i;
+	int				index;
+
 
 	t = malloc(sizeof(pthread_t) * common_info->number_of_philosophers);
 	if (!t)
@@ -90,10 +104,21 @@ void	create_philosophers(c_vars *common_info)
 	philo = malloc(sizeof(t_vars) * common_info->number_of_philosophers);
 	if (!philo)
 		return ;
+	mutex = malloc(sizeof(pthread_mutex_t) * common_info->number_of_philosophers);
+	if (!mutex)
+		return ;
 	i = 0;
 	while (i < common_info->number_of_philosophers)
 	{
+		pthread_mutex_init(&mutex[i], NULL);
+		i++;
+	}
+	i = 0;
+	while (i < common_info->number_of_philosophers)
+	{
+		philo[i].init_time = common_info->init_time;
 		philo[i].last_meal = 0;
+		philo[i].mutex = mutex;
 		philo[i].number_of_philosophers = common_info->number_of_philosophers;
 		philo[i].init_time = common_info->init_time;
 		philo[i].time_to_die = common_info->time_to_die;
@@ -101,7 +126,7 @@ void	create_philosophers(c_vars *common_info)
 		philo[i].time_to_sleep = common_info->time_to_sleep;
 		philo[i].index = i + 1;
 		pthread_create(&t[i], NULL, eat_time, (void *)&philo[i]);
-		usleep(500);
+		usleep(100);
 		i++;
 	}
 	while (1)
@@ -111,7 +136,14 @@ void	create_philosophers(c_vars *common_info)
 		{
 			if (get_current_time_philo(&philo[i]) - philo[i].last_meal > common_info->time_to_die)
 			{
-				printf("%zu ms %d died\n", get_current_time_philo(&philo[i]), philo[i].index);
+				index = i;
+				i = 0;
+				while (i < common_info->number_of_philosophers)
+				{
+					pthread_mutex_destroy(&mutex[i]);
+					i++;
+				}
+				printf("%zu ms %d died\n", get_current_time_philo(&philo[index]), philo[index].index);
 				return ;
 			}
 			i++;
@@ -127,7 +159,7 @@ int	main(int ac, char **av)
 	common_info.time_to_die = ft_atoi(av[2]);
 	common_info.time_to_eat = ft_atoi(av[3]);
 	common_info.time_to_sleep = ft_atoi(av[4]);
+	common_info.init_time = get_time();
 	create_philosophers(&common_info);
-	printf("%d -- %d -- %d -- %d\n", common_info.number_of_philosophers, common_info.time_to_die, common_info.time_to_eat, common_info.time_to_sleep);
 	return (0);
 }
