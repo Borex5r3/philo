@@ -6,7 +6,7 @@
 #    By: adbaich <adbaich@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 18:59:02 by adbaich           #+#    #+#              #
-#    Updated: 2022/05/16 20:57:22 by adbaich          ###   ########.fr        #
+#    Updated: 2022/05/22 17:16:59 by adbaich          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ SRC = ft_atoi.c \
 	four_or_five_args.c \
 
 OBJ := $(patsubst %.c,%.o, ${SRC})
-NAME = philosopher
+NAME = philo
 
 CC = gcc
 

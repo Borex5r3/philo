@@ -6,7 +6,7 @@
 /*   By: adbaich <adbaich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:19:30 by adbaich           #+#    #+#             */
-/*   Updated: 2022/05/12 17:39:51 by adbaich          ###   ########.fr       */
+/*   Updated: 2022/05/22 17:41:36 by adbaich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,9 @@ pthread_mutex_t	init_mutexes(pthread_mutex_t *mutex, int number_of_philosophers)
 void	fill_philos(t_vars *philo, t_info *common_info,
 		pthread_mutex_t *mutex, pthread_mutex_t msg)
 {
-	pthread_t	*t;
+	pthread_t	t;
 	int			i;
 
-	t = malloc(sizeof(pthread_t) * common_info->number_of_philosophers);
-	if (!t)
-		return ;
 	i = 0;
 	while (i < common_info->number_of_philosophers)
 	{
@@ -50,7 +47,7 @@ void	fill_philos(t_vars *philo, t_info *common_info,
 		philo[i].time_to_sleep = common_info->time_to_sleep;
 		philo[i].time_must_eat = common_info->time_must_eat;
 		philo[i].index = i + 1;
-		pthread_create(&t[i], NULL, eat_time, (void *)&philo[i]);
+		pthread_create(&t, NULL, eat_time, (void *)&philo[i]);
 		usleep(100);
 		i++;
 	}

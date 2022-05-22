@@ -6,7 +6,7 @@
 #    By: adbaich <adbaich@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/22 00:37:49 by adbaich           #+#    #+#              #
-#    Updated: 2022/05/22 00:44:34 by adbaich          ###   ########.fr        #
+#    Updated: 2022/05/22 17:22:28 by adbaich          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ BNS = ft_atoi_bonus.c \
 	the_thread_bonus.c \
 
 OBJ_BNS := $(patsubst %.c,%.o, ${BNS})
-NAME = philosopher_bonus
+NAME = philo_bonus
 
 CC = gcc
 
@@ -43,4 +43,4 @@ clean:
 fclean: clean
 	${RM} ${NAME}
 
-re: fclean all
+re: fclean bonus

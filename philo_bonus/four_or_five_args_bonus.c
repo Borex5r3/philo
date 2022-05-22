@@ -6,7 +6,7 @@
 /*   By: adbaich <adbaich@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 17:38:53 by adbaich           #+#    #+#             */
-/*   Updated: 2022/05/22 00:31:12 by adbaich          ###   ########.fr       */
+/*   Updated: 2022/05/22 17:34:39 by adbaich          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	four_args_help(t_info *common_info)
 		return ;
 	ids = create_processes(common_info, ids);
 	philo_is_dead(common_info, ids);
+	free(ids);
 }
 
 void	four_args(char **av)
@@ -80,6 +81,7 @@ void	five_args_help(t_info *common_info)
 		return ;
 	ids = create_processes(common_info, ids);
 	wait_processes(common_info, ids);
+	free(ids);
 }
 
 void	five_args(char **av)
